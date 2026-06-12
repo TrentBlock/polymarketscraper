@@ -71,74 +71,77 @@ export async function analyzeUntilQuota(
   const now = new Date();
   let analyzedCount = 0;
 
-  for (const user of users) {
+  const batchSize = 10;
+  for (let i = 0; i < users.length; i += batchSize) {
     if (realUsers.length >= quota) break;
     
-    analyzedCount++;
-    if (onProgress) {
-      onProgress(realUsers.length, quota, user.displayName || user.proxyAddress.slice(0, 8));
-    }
+    const batch = users.slice(i, i + batchSize);
     
-    try {
-      const [allPositions, activity] = await Promise.all([
-        getUserPositions(user.proxyAddress),
-        getUserActivity(user.proxyAddress, 500)
-      ]);
-
-      // Filter for strictly active positions
-      const activePositions = allPositions.filter(pos => {
-        const endDate = pos.endDate ? new Date(pos.endDate) : null;
-        const isFuture = !endDate || endDate > now;
-        const value = pos.currentValue || (pos.size * pos.curPrice) || 0;
-        return isFuture && value > 0;
-      });
-
-      // Calculate Total Portfolio Value for Conviction Weighting
-      const portfolioValue = activePositions.reduce((sum, pos) => sum + (pos.currentValue || (pos.size * pos.curPrice) || 0), 0);
-
-      // Enrich positions with advanced metrics
-      const enrichedPositions: AnalyzedPosition[] = activePositions.map(pos => {
-        // 1. Hedging / Dutching Check (multiple legs of the same conditionId)
-        const conditionMatches = activePositions.filter(p => p.conditionId === pos.conditionId);
-        const isHedge = conditionMatches.length > 1;
-
-        // 2. Conviction Score
-        const value = pos.currentValue || (pos.size * pos.curPrice) || 0;
-        const convictionScore = portfolioValue > 0 ? (value / portfolioValue) : 0;
-
-        // 3. Time Decay / Capital Parking
-        const daysToExpiration = pos.endDate ? (new Date(pos.endDate).getTime() - now.getTime()) / (1000 * 3600 * 24) : 999;
-
-        // 4. Macro Tag
-        const macroTag = assignMacroTag(pos.marketName);
-
-        return { ...pos, convictionScore, isHedge, daysToExpiration, macroTag };
-      });
-
-      const botCheck = checkIsBot(user, allPositions, activity);
+    await Promise.all(batch.map(async (user) => {
+      // Abort early if another parallel task already hit the quota
+      if (realUsers.length >= quota) return;
       
-      const analyzedUser: AnalyzedUser = {
-        address: user.proxyAddress,
-        displayName: user.displayName,
-        profit: user.profit,
-        volume: user.volume,
-        isBot: botCheck.isBot,
-        botReason: botCheck.reason,
-        portfolioValue,
-        positions: enrichedPositions,
-        allPositionsCount: allPositions.length
-      };
+      try {
+        const [allPositions, activity] = await Promise.all([
+          getUserPositions(user.proxyAddress),
+          getUserActivity(user.proxyAddress, 500)
+        ]);
 
-      if (analyzedUser.isBot) {
-        bots.push(analyzedUser);
-      } else {
-        realUsers.push(analyzedUser);
+        // Filter for strictly active positions
+        const activePositions = allPositions.filter(pos => {
+          const endDate = pos.endDate ? new Date(pos.endDate) : null;
+          const isFuture = !endDate || endDate > now;
+          const value = pos.currentValue || (pos.size * pos.curPrice) || 0;
+          return isFuture && value > 0;
+        });
+
+        // Calculate Total Portfolio Value for Conviction Weighting
+        const portfolioValue = activePositions.reduce((sum, pos) => sum + (pos.currentValue || (pos.size * pos.curPrice) || 0), 0);
+
+        // Enrich positions with advanced metrics
+        const enrichedPositions: AnalyzedPosition[] = activePositions.map(pos => {
+          const conditionMatches = activePositions.filter(p => p.conditionId === pos.conditionId);
+          const isHedge = conditionMatches.length > 1;
+          const value = pos.currentValue || (pos.size * pos.curPrice) || 0;
+          const convictionScore = portfolioValue > 0 ? (value / portfolioValue) : 0;
+          const daysToExpiration = pos.endDate ? (new Date(pos.endDate).getTime() - now.getTime()) / (1000 * 3600 * 24) : 999;
+          const macroTag = assignMacroTag(pos.marketName);
+
+          return { ...pos, convictionScore, isHedge, daysToExpiration, macroTag };
+        });
+
+        const botCheck = checkIsBot(user, allPositions, activity);
+        
+        const analyzedUser: AnalyzedUser = {
+          address: user.proxyAddress,
+          displayName: user.displayName,
+          profit: user.profit,
+          volume: user.volume,
+          isBot: botCheck.isBot,
+          botReason: botCheck.reason,
+          portfolioValue,
+          positions: enrichedPositions,
+          allPositionsCount: allPositions.length
+        };
+
+        if (analyzedUser.isBot) {
+          bots.push(analyzedUser);
+        } else {
+          realUsers.push(analyzedUser);
+        }
+        
+        analyzedCount++;
+        if (onProgress) {
+          onProgress(realUsers.length, quota, user.displayName || user.proxyAddress.slice(0, 8));
+        }
+
+      } catch (error) {
+        console.error(`Error analyzing user ${user.proxyAddress}:`, error);
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 50));
-    } catch (error) {
-      console.error(`Error analyzing user ${user.proxyAddress}:`, error);
-    }
+    }));
+    
+    // Add a small delay between batches to avoid strict rate-limiting
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 
   const { consensusTrades, macroCategories } = findConsensusAndMacro(realUsers);
