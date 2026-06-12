@@ -3,6 +3,8 @@ import { runFullAnalysis } from '@/lib/scraper';
 import { getPaperTrades, savePaperTrades } from '@/lib/paper-trading';
 import { getMarketPrice } from '@/lib/polymarket';
 
+export const maxDuration = 60; // 60 seconds (maximum for Vercel Hobby plan)
+
 export async function GET(request: Request) {
   // Optional: Check for a secret token to prevent unauthorized triggers
   // const authHeader = request.headers.get('authorization');
