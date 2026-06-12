@@ -61,7 +61,7 @@ export async function getLeaderboard(period: string = 'MONTH', targetTotal: numb
     offset += limit;
 
     // Small delay to prevent rate limiting when paginating
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 25));
   }
 
   return allUsers;

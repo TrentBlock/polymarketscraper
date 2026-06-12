@@ -70,10 +70,19 @@ export async function analyzeUntilQuota(
   const realUsers: AnalyzedUser[] = [];
   const now = new Date();
   let analyzedCount = 0;
+  
+  const startTime = Date.now();
+  const TIME_LIMIT = 48000; // 48 seconds safe buffer before 60s platform timeout
 
-  const batchSize = 10;
+  const batchSize = 25; // High concurrency to blast through as many as possible
   for (let i = 0; i < users.length; i += batchSize) {
     if (realUsers.length >= quota) break;
+    
+    // Strict bailout if we are getting close to the 60s serverless death
+    if (Date.now() - startTime > TIME_LIMIT) {
+      console.warn(`Time limit of ${TIME_LIMIT}ms reached. Halting scraping to prevent Vercel crash. Found ${realUsers.length}/${quota} users.`);
+      break;
+    }
     
     const batch = users.slice(i, i + batchSize);
     

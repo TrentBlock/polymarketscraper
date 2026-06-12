@@ -5,7 +5,7 @@ import { capturePaperTrades } from '@/lib/scraper';
 import { put } from '@vercel/blob';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 300; // 300 seconds (maximum for Vercel Pro/Trial)
+export const maxDuration = 60; // 60 seconds (maximum for Vercel Hobby plan)
 
 export async function GET(req: NextRequest) {
   const encoder = new TextEncoder();
