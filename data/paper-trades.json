@@ -1,0 +1,54 @@
+[
+  {
+    "marketName": "Will Claude 5 be released by June 30, 2026?",
+    "outcome": "Yes",
+    "entryPrice": 0.915,
+    "amount": 1000,
+    "conviction": 0.9486290802048968,
+    "timestamp": "2026-06-09T01:25:07.684Z",
+    "endDate": "2026-06-30",
+    "conditionId": "0x562d8e6be61af9176d3ed95c775b56202e5e668d7dd703be7c875926f56efdbd",
+    "id": "nn2ub5v3g9",
+    "status": "WON",
+    "pnl": 92.89617486338784
+  },
+  {
+    "marketName": "Will the New York Knicks win the 2026 NBA Finals?",
+    "outcome": "Yes",
+    "entryPrice": 0.7114,
+    "amount": 1000,
+    "conviction": 0.9319552675833107,
+    "timestamp": "2026-06-09T01:25:07.684Z",
+    "endDate": "2026-07-01",
+    "conditionId": "0x713641f745d71f6ec61f906237ffca3c8583f251e49384429a63ceb0ccdb2d37",
+    "id": "ukteza4f5wd",
+    "status": "OPEN",
+    "pnl": 128.76019117233625
+  },
+  {
+    "marketName": "US x Iran permanent peace deal by June 15, 2026?",
+    "outcome": "No",
+    "entryPrice": 0.945,
+    "amount": 1000,
+    "conviction": 0.7124986197579385,
+    "timestamp": "2026-06-09T01:25:07.685Z",
+    "endDate": "2026-06-15",
+    "conditionId": "0xd86a816093fcd0a0e1ca440bc5ce199bd3c5a8d6139e044b076958164f8c5423",
+    "id": "n604uqsh41",
+    "status": "OPEN",
+    "pnl": -78.83597883597874
+  },
+  {
+    "marketName": "Will Korea Republic win on 2026-06-11?",
+    "outcome": "Yes",
+    "entryPrice": 0.375,
+    "amount": 1000,
+    "conviction": 0.7316797604649707,
+    "timestamp": "2026-06-11T23:18:04.542Z",
+    "endDate": "2026-06-12",
+    "conditionId": "0x7061e7ce4d7744677b6c3a7d1db0f82eb90c342104167386619d75777a6083c1",
+    "id": "6i1yt2345j9",
+    "status": "OPEN",
+    "pnl": 0
+  }
+]
