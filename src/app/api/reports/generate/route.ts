@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { runFullAnalysis } from '@/lib/scraper';
 
-export const maxDuration = 60; // 60 seconds (maximum for Vercel Hobby plan)
+export const maxDuration = 300; // 300 seconds (maximum for Vercel Pro/Trial)
 
 export async function POST() {
   try {

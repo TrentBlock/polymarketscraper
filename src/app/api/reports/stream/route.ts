@@ -5,7 +5,7 @@ import { capturePaperTrades } from '@/lib/scraper';
 import { put } from '@vercel/blob';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60; // 60 seconds (maximum for Vercel Hobby plan)
+export const maxDuration = 300; // 300 seconds (maximum for Vercel Pro/Trial)
 
 export async function GET(req: NextRequest) {
   const encoder = new TextEncoder();
@@ -25,10 +25,10 @@ export async function GET(req: NextRequest) {
         
         sendUpdate(10, 'Leaderboard fetched. Starting analysis...');
 
-        const result = await analyzeUntilQuota(leaderboard, 50, (current, target, user) => {
+        const result = await analyzeUntilQuota(leaderboard, 75, (current, target, user) => {
           // Progress callback from analysis
           if (isClosed) return;
-          // Calculate progress from 10% to 90% based on how close we are to 50 real users
+          // Calculate progress from 10% to 90% based on how close we are to target real users
           const percent = 10 + Math.floor((current / target) * 80);
           sendUpdate(percent, `Analyzing users (${current}/${target} real users found)... Check: ${user}`);
         });

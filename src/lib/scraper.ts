@@ -37,8 +37,8 @@ export async function runFullAnalysis() {
   // Fetch up to 500 users using pagination
   const leaderboard = await getLeaderboard('MONTH', 500);
 
-  // Process until we hit 50 real users
-  const result = await analyzeUntilQuota(leaderboard, 50);
+  // Process until we hit 75 real users
+  const result = await analyzeUntilQuota(leaderboard, 75);
   const markdown = generateMarkdownReport(result);
 
   const filename = `${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
