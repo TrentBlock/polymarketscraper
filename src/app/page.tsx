@@ -29,9 +29,17 @@ export default function Home() {
     try {
       const res = await fetch('/api/reports');
       const data = await res.json();
-      setReports(data);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      if (Array.isArray(data)) {
+        setReports(data);
+      } else {
+        setReports([]);
+      }
     } catch (err) {
       console.error('Failed to fetch reports', err);
+      setError((err as Error).message);
     }
   };
 
