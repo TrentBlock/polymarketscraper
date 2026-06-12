@@ -5,13 +5,6 @@
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -20,7 +13,64 @@
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom Typography Styles for .prose */
+.prose {
+  @apply text-gray-800 dark:text-gray-200 leading-relaxed;
+}
+
+.prose h1 {
+  @apply text-4xl font-extrabold mb-6 mt-8 border-b pb-4 text-black dark:text-white;
+}
+
+.prose h2 {
+  @apply text-2xl font-bold mb-4 mt-10 border-b border-gray-200 dark:border-gray-800 pb-2 text-black dark:text-white;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mb-3 mt-6 text-black dark:text-white;
+}
+
+.prose p {
+  @apply mb-4 text-base;
+}
+
+.prose table {
+  @apply w-full border-collapse mb-8 text-sm text-left overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800;
+}
+
+.prose thead {
+  @apply bg-gray-50 dark:bg-zinc-800/50;
+}
+
+.prose th {
+  @apply p-4 font-bold border-b border-gray-200 dark:border-gray-800 text-gray-900 dark:text-gray-100;
+}
+
+.prose td {
+  @apply p-4 border-b border-gray-200 dark:border-gray-800 align-top;
+}
+
+.prose tr:last-child td {
+  @apply border-b-0;
+}
+
+.prose tr:hover {
+  @apply bg-gray-50/50 dark:bg-zinc-800/30;
+}
+
+.prose ul {
+  @apply list-disc pl-6 mb-6 space-y-2;
+}
+
+.prose li {
+  @apply text-base;
+}
+
+.prose strong {
+  @apply font-semibold text-black dark:text-white;
 }
